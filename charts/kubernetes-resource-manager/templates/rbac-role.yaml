@@ -1,0 +1,28 @@
+{{ if .Values.rbac.namespaced }}
+{{- $roleCr := (printf "%s-%s" (include "kubernetes-resource-manager.fullname" .) "cr") -}}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ $roleCr }}
+rules:
+{{- range .Values.rbac.roles }}
+- apiGroups: {{ if .apiGroups }}[{{ .apiGroups }}]{{ else }}[""]{{ end }}
+  resources: {{ join "," .resources | list }}
+  verbs: {{ join "," .verbs | list }}
+{{- end }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    {{- include "kubernetes-resource-manager.labels" . | nindent 4 }}
+  name: {{ $roleCr }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ $roleCr }}
+subjects:
+- kind: ServiceAccount
+  name: {{ include "kubernetes-resource-manager.serviceAccountName" . }}
+  namespace: {{ .Release.Namespace }}
+{{ end }}
