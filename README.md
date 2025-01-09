@@ -19,7 +19,7 @@ This repository provides deployment guidelines and some example use cases for th
 ```sh
     minikube ip
 ```
-3. Change the IP in  'global.registry.url' and 'global.externalHostAddress' properties in values file (*helm/platform/values.yaml*) with the one obtained in the previous step.
+3. Change the IP in  'global.registry.url' and 'global.externalHostAddress' properties in values file (*charts/platform/values.yaml*) with the one obtained in the previous step.
 4. Add the platform repository:
 ```sh
 helm repo add platform https://tn-aixpa.github.io/platform/
