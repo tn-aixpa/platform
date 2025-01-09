@@ -26,7 +26,7 @@ The platform deployment is managed via Docker Compose. Each documented use case 
 3. Change the IP in  'global.registry.url' and 'global.externalHostAddress' properties in values file (*helm/platform/values.yaml*) with the one obtained in the previous step.
 4. Add the platform repository:
 ```sh
-helm repo add platform https://scc-digitalhub.github.io/digitalhub/
+helm repo add platform https://tn-aixpa.github.io/platform/
 ```
 5. Install the platform with Helm:
 ```sh
