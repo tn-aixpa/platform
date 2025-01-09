@@ -1,0 +1,98 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "core.fullname" . }}
+data:
+  DH_ENDPOINT: "{{ include "core.endpoint" . }}"
+  K8S_NAMESPACE: {{ .Release.Namespace }}
+  JDBC_PLATFORM: postgresql
+  JDBC_URL: "jdbc:postgresql://core-postgres-cluster:5432/core"
+  JDBC_DRIVER: org.postgresql.Driver
+  JDBC_DIALECT: org.hibernate.dialect.PostgreSQLDialect
+  DH_CONFIG_COMMON_SECRETS: platform-common-creds
+  DH_CONFIG_COMMON_MAPS: platform-common-env
+  LOG_LEVEL: INFO
+  RUNTIME_DBT_IMAGE: {{ .Values.runtime.dbt.image }}:{{ .Values.runtime.dbt.tag }}
+  RUNTIME_KFP_IMAGE: {{ .Values.runtime.kfp.image }}:{{ .Values.runtime.kfp.tag }}
+  RUNTIME_PYTHON_IMAGE_3_9: {{ .Values.runtime.python.image }}:{{ .Values.runtime.python.tag3_9 }}
+  RUNTIME_PYTHON_IMAGE_3_10: {{ .Values.runtime.python.image }}:{{ .Values.runtime.python.tag3_10 }}
+  RUNTIME_PYTHON_IMAGE_3_11: {{ .Values.runtime.python.image }}:{{ .Values.runtime.python.tag3_11 }}
+  RUNTIME_HUGGINGFACE_SERVE_IMAGE: {{ .Values.runtime.huggingFace.image }}:{{ .Values.runtime.huggingFace.tag }}
+  {{- if .Values.events.enabled }}
+  ENABLE_EVENTS: {{ .Values.events.enabled | quote }} 
+  {{- if .Values.events.rabbitmq.enabled }}
+  RABBITMQ_ENABLE: {{ .Values.events.rabbitmq.enabled | quote }}
+  RABBITMQ_HOST: {{ .Values.events.rabbitmq.host }}
+  RABBITMQ_PORT: {{ .Values.events.rabbitmq.port | quote }}
+  RABBITMQ_VHOST: {{ .Values.events.rabbitmq.vhost }}
+  RABBITMQ_QUEUE: {{ .Values.events.rabbitmq.queue }}
+  RABBITMQ_TOPIC: {{ .Values.events.rabbitmq.topic }}
+  RABBITMQ_ROUTING_KEY: {{ .Values.events.rabbitmq.routingKey }}
+{{- end }}
+{{- end }}
+{{- if .Values.solr.enabled }}
+  ENABLE_SOLR: {{ .Values.solr.enabled | quote }}
+  SOLR_URL: {{ .Values.solr.url }}
+  SOLR_COLLECTION: {{ .Values.solr.collection.name }}
+  {{- if .Values.solr.collection.initialize.enabled }}
+  SOLR_USER: {{ .Values.solr.user }}
+  {{- end }}
+{{- end }}
+{{- if .Values.authentication.basic.enabled }}
+  DH_AUTH_BASIC_USER: {{ .Values.authentication.basic.username }}
+  DH_AUTH_BASIC_PASSWORD: {{ .Values.authentication.basic.password }}
+{{- end }}
+{{- if .Values.authentication.openId.enabled }}
+{{- if .Values.authentication.openId.jwtAudience }}
+  DH_AUTH_JWT_ISSUER_URI: {{ .Values.authentication.openId.issuerUri }}
+  DH_AUTH_JWT_AUDIENCE: {{ .Values.authentication.openId.jwtAudience }}
+{{- end }}
+  DH_AUTH_JWT_CLAIM: {{ .Values.authentication.openId.jwtClaim }}
+  DH_AUTH_OIDC_ISSUER_URI: {{ .Values.authentication.openId.issuerUri }}
+  DH_AUTH_OIDC_SCOPE: {{ .Values.authentication.openId.scope }}
+  DH_AUTH_JWT_USERNAME: {{ .Values.authentication.openId.jwtUsername }}
+{{- end }}
+{{- if .Values.global.registry.url }}
+  DOCKER_REGISTRY: {{ .Values.global.registry.url }}
+{{- end }}
+{{- if and .Values.global.registry.username .Values.global.registry.password .Values.global.registry.email }}
+  KANIKO_IMAGE_PREFIX: {{ .Values.registry.kaniko.imagePrefix | default .Release.Namespace }}
+  DOCKER_REGISTRY_SECRET: {{ .Values.global.registry.secretName }}
+{{- end }}
+  KANIKO_ARGS: {{ .Values.kanikoArgs | quote }}
+  DH_CORS_ORIGINS: {{ .Values.corsOrigin | quote }}
+{{- if and .Values.keystore.existingSecret.secretName .Values.keystore.keystorePath }}
+  JWT_KEYSTORE_PATH: "{{ .Values.keystore.keystorePath }}/{{ .Values.keystore.existingSecret.keyName }}"
+  JWT_KEYSTORE_KID: {{ .Values.keystore.keystoreKid | quote }}
+{{- else if and (not .Values.keystore.existingSecret.secretName) .Values.keystore.keystorePath }}
+  JWT_KEYSTORE_PATH: "{{ .Values.keystore.keystorePath }}/keystore.jwks"
+  JWT_KEYSTORE_KID: {{ .Values.keystore.keystoreKid | quote }}
+{{- end }}
+  JWT_ACCESS_TOKEN_DURATION: {{ .Values.coreTokens.accessTokenDuration | quote }}
+  JWT_REFRESH_TOKEN_DURATION: {{ .Values.coreTokens.refreshTokenDuration | quote }}
+  AWS_DEFAULT_REGION: {{ .Values.minio.awsDefaultRegion }}
+  AWS_REGION: {{ .Values.minio.awsRegion }}
+  S3_ENDPOINT: {{ .Values.minio.publicUrl }}
+  S3_BUCKET: {{ .Values.minio.bucket }}
+{{- if .Values.templates }}
+  K8S_TEMPLATES: {{ include "core.templates" . | quote }}
+{{- end }}
+  K8S_INIT_IMAGE: "{{ .Values.initImage.builderTool.image }}:{{ .Values.initImage.builderTool.tag }}"
+  K8S_ENABLE_METRICS: {{ .Values.additionalConfig.debug.enableMetrics | quote }}
+  K8S_ENABLE_LOGS: {{ .Values.additionalConfig.debug.enableLogs | quote }}
+  K8S_SEC_DISABLE_ROOT: {{ .Values.additionalConfig.security.disableRoot | quote }}
+  K8S_RESOURCE_CPU_DEFAULT: {{ .Values.additionalConfig.resources.cpuReq | quote }}
+  K8S_RESOURCE_CPU_LIMIT: {{ .Values.additionalConfig.resources.cpuLim | quote }}
+  K8S_RESOURCE_MEM_DEFAULT: {{ .Values.additionalConfig.resources.memReq | quote }}
+  K8S_RESOURCE_MEM_LIMIT: {{ .Values.additionalConfig.resources.memLim | quote }}
+  K8S_RESOURCE_GPU_KEY: {{ .Values.additionalConfig.resources.gpuKey | quote }}
+  K8S_SERVICE_TYPE: {{ .Values.additionalConfig.service.type | quote }}
+  K8S_JOB_DEADLINE: {{ .Values.additionalConfig.job.deadline | quote }}
+  K8S_JOB_SUSPEND: {{ .Values.additionalConfig.job.jobSuspend | quote }}
+  ARGOWORKFLOWS_ARTIFACTS_CONFIGMAP: {{ .Values.argoWorkflow.configmap }}
+  ARGOWORKFLOWS_ARTIFACTS_KEY: {{ .Values.argoWorkflow.key }}
+  ARGOWORKFLOWS_SERVICE_ACCOUNT: {{ .Values.argoWorkflow.serviceAccount }}
+  ARGOWORKFLOWS_USER: {{ .Values.argoWorkflow.user | quote }}
+{{- with .Values.configmapAdditionalEnv }}
+{{- toYaml . | nindent 2 }}
+{{- end }}

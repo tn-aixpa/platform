@@ -1,0 +1,160 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "core.fullname" . }}
+  labels:
+    {{- include "core.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "core.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+      {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "core.labels" . | nindent 8 }}
+	{{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "core.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- if .Values.solr.enabled }}
+      initContainers:
+        - name: wait-solr
+          image: {{ .Values.solr.collection.initialize.image }}
+          command: ["/bin/sh", "-c"]
+          args:
+          {{- if not .Values.solr.collection.initialize.enabled }}
+            - until [ "$(curl -s -w '%{http_code}' -o /dev/null "{{ .Values.solr.url }}/admin/info/health")" -eq 200 ]; do echo "waiting for solr to be ready"; sleep 5; done
+          {{- else }}
+            - until [ "$(curl --user admin:$SOLR_ADMIN_PWD -s -w '%{http_code}' -o /dev/null "{{ .Values.solr.url }}/admin/info/health")" -eq 200 ]; do echo "waiting for solr to be ready"; sleep 5; done
+          env:
+            - name: "SOLR_ADMIN_PWD"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.solr.fullNameOverride }}-solrcloud-security-bootstrap
+                  key: admin
+          {{- end }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: AWS_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.global.minio.platformUserSecret }}
+                  key: platformUser
+            - name: AWS_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.global.minio.platformUserSecret }}
+                  key: platformPassword
+            - name: JDBC_USER
+              valueFrom:
+                secretKeyRef:
+                  name: coreuser.core-postgres-cluster.credentials.postgresql.acid.zalan.do
+                  key: username
+            - name: JDBC_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: coreuser.core-postgres-cluster.credentials.postgresql.acid.zalan.do
+                  key: password
+            {{- if and .Values.events.enabled .Values.events.rabbitmq.enabled }}
+            - name: RABBITMQ_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.events.rabbitmq.credentials.existingSecret.name | default (printf "%s-rabbitmq-creds" (include "core.fullname" .)) }}
+                  key: {{ .Values.events.rabbitmq.credentials.existingSecret.usernameKey | default "username" }}
+            - name: RABBITMQ_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.events.rabbitmq.credentials.existingSecret.name | default (printf "%s-rabbitmq-creds" (include "core.fullname" .)) }}
+                  key: {{ .Values.events.rabbitmq.credentials.existingSecret.passwordKey | default "password" }}
+            {{- end }}
+            {{- if .Values.authentication.openId.enabled }}
+            - name: DH_AUTH_OIDC_CLIENT_ID
+              {{- if .Values.authentication.openId.externalSecret.name  }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.authentication.openId.externalSecret.name }}
+                  key: {{ .Values.authentication.openId.externalSecret.key }}
+              {{- else}}
+              value: {{ .Values.authentication.openId.oidcClientId }}
+              {{- end }}
+            {{- end }}
+            - name: JWT_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: core-auth-creds
+                  key: clientId
+            - name: JWT_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: core-auth-creds
+                  key: clientSecret
+            {{- if .Values.solr.collection.initialize.enabled }}
+            - name: SOLR_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.solr.fullNameOverride }}-solrcloud-security-bootstrap
+                  key: solr
+            {{- end }}
+          envFrom:
+          - configMapRef:
+              name: {{ include "core.fullname" . }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+          {{- if and .Values.keystore.existingSecret.secretName .Values.keystore.keystorePath }}
+            - name: keystore
+              mountPath: "{{ .Values.keystore.keystorePath }}/{{ .Values.keystore.existingSecret.keyName }}"
+              subPath: {{ .Values.keystore.existingSecret.keyName }}
+          {{- end }}
+          {{- with .Values.volumeMounts }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      volumes:
+      {{- if and .Values.keystore.existingSecret.secretName .Values.keystore.keystorePath }}
+        - name: keystore
+          secret:
+            secretName: {{ .Values.keystore.existingSecret.secretName }}
+      {{- end }}
+      {{- with .Values.volumes }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

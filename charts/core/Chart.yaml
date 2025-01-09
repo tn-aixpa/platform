@@ -1,0 +1,11 @@
+apiVersion: v2
+name: core
+description: Core backend application for the platform.
+type: application
+version: 0.3.1
+appVersion: "0.9.0"
+maintainers:
+  - name: ffais
+    url: https://github.com/ffais
+  - name: calcagiara
+    url: https://github.com/Calcagiara
