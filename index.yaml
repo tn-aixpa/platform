@@ -1,0 +1,132 @@
+apiVersion: v1
+entries:
+  apigw-operator:
+  - apiVersion: v2
+    appVersion: 1.1.2
+    created: "2025-01-09T14:33:36.616813651Z"
+    description: A Helm chart for Kubernetes
+    digest: 317bff21b2056c10a29fc1a781db18926bd744fb53a78acf913ca14ddb36f12a
+    maintainers:
+    - name: ffais
+      url: https://github.com/ffais
+    - name: calcagiara
+      url: https://github.com/Calcagiara
+    name: apigw-operator
+    type: application
+    urls:
+    - https://github.com/tn-aixpa/platform/releases/download/apigw-operator-0.1.8/apigw-operator-0.1.8.tgz
+    version: 0.1.8
+  core:
+  - apiVersion: v2
+    appVersion: 0.9.0
+    created: "2025-01-09T14:33:36.782214066Z"
+    description: Core backend application for the platform.
+    digest: 7939b4c1c92efabaf1880eb5bc3b00a04e0e0a40dce8d09848fe76bbe3293039
+    maintainers:
+    - name: ffais
+      url: https://github.com/ffais
+    - name: calcagiara
+      url: https://github.com/Calcagiara
+    name: core
+    type: application
+    urls:
+    - https://github.com/tn-aixpa/platform/releases/download/core-0.3.1/core-0.3.1.tgz
+    version: 0.3.1
+  dremio-rest-server-operator:
+  - apiVersion: v2
+    appVersion: 1.0.3
+    created: "2025-01-09T14:33:36.905513386Z"
+    description: A Helm chart for Kubernetes
+    digest: c6797b58899ddceeded9da1dd36cbb4b269f6521ad97e1e76f89add9a5d4a20f
+    maintainers:
+    - name: ffais
+      url: https://github.com/ffais
+    - name: calcagiara
+      url: https://github.com/Calcagiara
+    name: dremio-rest-server-operator
+    type: application
+    urls:
+    - https://github.com/tn-aixpa/platform/releases/download/dremio-rest-server-operator-0.1.5/dremio-rest-server-operator-0.1.5.tgz
+    version: 0.1.5
+  ext-postgres-operator:
+  - apiVersion: v2
+    appVersion: 1.2.3
+    created: "2025-01-09T14:33:36.997459439Z"
+    description: 'A Helm chart for the External Postgres operator  helm repo add ext-postgres-operator
+      https://movetokube.github.io/postgres-operator/ helm upgrade --install -n operators
+      ext-postgres-operator  ext-postgres-operator/ext-postgres-operator --version
+      1.2.3 '
+    digest: c66e41506d17d36b093e401f4c15c1af68df23dcd92f740e74d4a672f0872bd3
+    name: ext-postgres-operator
+    type: application
+    urls:
+    - https://github.com/tn-aixpa/platform/releases/download/ext-postgres-operator-1.2.6/ext-postgres-operator-1.2.6.tgz
+    version: 1.2.6
+  kubernetes-resource-manager:
+  - apiVersion: v2
+    appVersion: 1.2.2
+    created: "2025-01-09T14:33:37.105669967Z"
+    description: A Helm chart for Kubernetes
+    digest: 2ba0c86bbb29bea1196157eaf6dff8e7e782fd3a3b11712c10fc196dc678869a
+    maintainers:
+    - name: ffais
+      url: https://github.com/ffais
+    - name: calcagiara
+      url: https://github.com/Calcagiara
+    name: kubernetes-resource-manager
+    type: application
+    urls:
+    - https://github.com/tn-aixpa/platform/releases/download/kubernetes-resource-manager-0.2.6/kubernetes-resource-manager-0.2.6.tgz
+    version: 0.2.6
+  minio-operator:
+  - apiVersion: v2
+    appVersion: 1.0.1
+    created: "2025-01-09T14:33:37.265038012Z"
+    description: A Kubernetes operator to handle instances of buckets, users and policies
+      on MinIO.
+    digest: 069880d7688faa2d733bfe1ccf0b6175045d667a7d8997dea358b739a6ce002a
+    maintainers:
+    - name: ffais
+      url: https://github.com/ffais
+    - name: calcagiara
+      url: https://github.com/Calcagiara
+    name: minio-operator
+    type: application
+    urls:
+    - https://github.com/tn-aixpa/platform/releases/download/minio-operator-0.1.5/minio-operator-0.1.5.tgz
+    version: 0.1.5
+  platform-crds:
+  - apiVersion: v2
+    appVersion: 0.3.0
+    created: "2025-01-09T14:33:37.371059036Z"
+    description: This Helm Chart is a collection of all the platform's CRDs, this
+      chart is used in the scenario where the user installing the platform does not
+      have permissions to create CRDs.
+    digest: f797ef2f342a3d6a19098563d8fc1e439f006b7f32b629929de2b1aec051f8ba
+    maintainers:
+    - name: ffais
+      url: https://github.com/ffais
+    - name: calcagiara
+      url: https://github.com/Calcagiara
+    name: platform-crds
+    type: application
+    urls:
+    - https://github.com/tn-aixpa/platform/releases/download/platform-crds-0.1.5/platform-crds-0.1.5.tgz
+    version: 0.1.5
+  postgrest-operator:
+  - apiVersion: v2
+    appVersion: 2.0.5
+    created: "2025-01-09T14:33:37.475157447Z"
+    description: A Helm chart for Kubernetes
+    digest: 88fd113e970393253cbbc165c9affeea2f86180a963f027093f3a9397f9fe470
+    maintainers:
+    - name: ffais
+      url: https://github.com/ffais
+    - name: calcagiara
+      url: https://github.com/Calcagiara
+    name: postgrest-operator
+    type: application
+    urls:
+    - https://github.com/tn-aixpa/platform/releases/download/postgrest-operator-0.1.7/postgrest-operator-0.1.7.tgz
+    version: 0.1.7
+generated: "2025-01-09T14:33:37.475163658Z"
