@@ -1,0 +1,11 @@
+apiVersion: v2
+name: platform-crds
+description: This Helm Chart is a collection of all the platform's CRDs, this chart is used in the scenario where the user installing the platform does not have permissions to create CRDs.
+type: application
+version: 0.1.5
+appVersion: "0.3.0"
+maintainers:
+  - name: ffais
+    url: https://github.com/ffais
+  - name: calcagiara
+    url: https://github.com/Calcagiara

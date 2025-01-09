@@ -1,0 +1,12 @@
+####################################################
+#    _____  _       _    __                        #
+#   |  __ \| |     | |  / _|                       #
+#   | |__) | | __ _| |_| |_ ___  _ __ _ __ ___     #
+#   |  ___/| |/ _` | __|  _/ _ \| '__| '_ ` _ \    #
+#   | |    | | (_| | |_| || (_) | |  | | | | | |   #
+#   |_|    |_|\__,_|\__|_| \___/|_|  |_| |_| |_|   #
+#                                                  #
+####################################################
+
+All crds installed correctly, now you can proceed with installing the platform with the command:
+  helm upgrade platform digitalhub/platform -n platform --install --create-namespace --timeout 15m0s --skip-crds
