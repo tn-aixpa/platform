@@ -1,0 +1,26 @@
+{{- $externalUrl := .Values.global.externalHostAddress -}}
+####################################################
+#    _____  _       _    __                        #
+#   |  __ \| |     | |  / _|                       #
+#   | |__) | | __ _| |_| |_ ___  _ __ _ __ ___     #
+#   |  ___/| |/ _` | __|  _/ _ \| '__| '_ ` _ \    #
+#   | |    | | (_| | |_| || (_) | |  | | | | | |   #
+#   |_|    |_|\__,_|\__|_| \___/|_|  |_| |_| |_|   #
+#                                                  #
+####################################################
+
+{{ $.Chart.Name | title }} has been installed. Check its status by running:
+  kubectl --namespace {{ .Release.Namespace }} get pods
+{{ if (eq .Values.global.service.type "NodePort") }}
+Platform componet URLs:
+  - Dashboard: http://{{ $externalUrl }}:{{ .Values.dashboard.service.httpNodePort }}
+{{- range .Values.coder.template.customTemplates }}
+  - {{ .name | title }}: http://{{ $externalUrl }}:{{ .nodePort }} {{ printf "(Create %s workspace from template in the coder dashboard before use)" .name }}
+{{- end }}
+  - Docker Registry: http://{{ $externalUrl }}:{{ index .Values "docker-registry" "service" "nodePort" }}
+  - Minio API: http://{{ $externalUrl }}:{{ .Values.minio.service.nodePort }} (Username: {{ .Values.minio.rootUser }} Password: {{ .Values.minio.rootPassword }})
+  - Minio UI: http://{{ $externalUrl }}:{{ .Values.minio.consoleService.nodePort }} (Username: {{ .Values.minio.rootUser }} Password: {{ .Values.minio.rootPassword }})
+  - Coder: http://{{ $externalUrl }}:{{ .Values.coder.coder.service.httpNodePort }} (Username: {{ .Values.coder.email }} Password: {{ .Values.coder.password }})
+  - Core: http://{{ $externalUrl }}:{{ .Values.core.service.httpNodePort }}
+  - Kubernetes Resource Manager: http://{{ $externalUrl }}:{{ index .Values "kubernetes-resource-manager" "service" "nodePort" }}
+{{ end }}

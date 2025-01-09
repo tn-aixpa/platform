@@ -1,0 +1,43 @@
+{{- if and .Values.coder.enabled .Values.coder.template.upgrade.enabled .Values.coder.template.upgrade.token}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: coder-template-upgrade
+  annotations:
+    "helm.sh/hook": post-upgrade
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  backoffLimit: 1
+  template:
+    spec:
+      containers:
+        - name: coder-template-upgrade
+          image: {{ .Subcharts.coder.Values.coder.image.repo }}:{{ .Subcharts.coder.Values.coder.image.tag }}
+          command: ["/bin/bash", "/home/coder/init-files/upgrade.sh"]
+          env:
+            {{- with .Subcharts.coder.Values.coder.env -}}
+            {{ toYaml . | nindent 12 }}
+            {{- end }}
+            {{- include "platform.coderAccUrl" . | nindent 12 -}}
+            - name: CODER_URL
+              value: "http://coder"
+            - name: CODER_SESSION_TOKEN
+              value: {{ .Values.coder.template.upgrade.token }}
+          volumeMounts:
+          - name: init-files
+            mountPath: "/home/coder/init-files"
+            readOnly: true
+          - name: custom-template
+            mountPath: "/home/coder/custom-template"
+            readOnly: true
+          securityContext:
+            {{- toYaml .Values.global.securityContext | nindent 12}}
+      restartPolicy: Never
+      volumes:
+        - name: init-files
+          configMap:
+            name: coder-init
+        - name: custom-template
+          configMap:
+            name: coder-custom-template
+{{- end }}

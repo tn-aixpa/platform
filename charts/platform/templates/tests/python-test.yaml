@@ -1,0 +1,92 @@
+{{- $files := .Files }}
+{{- range $key, $value := .Files }}
+{{- if hasPrefix "confs/tests/python-test/" $key }}
+{{- $testName := ($key | trimPrefix "confs/tests/python-test/" | trimSuffix ".py") }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{ include "platform.fullname" $ }}-python-test-{{$testName}}"
+  labels:
+    {{- include "platform.labels" $ | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  template:
+    spec:
+      initContainers:
+        - name: clone-repo
+          image: bitnami/git:latest
+          command: ["/bin/sh", "-c", "cd home/git/ && git clone https://github.com/scc-digitalhub/digitalhub-tutorials.git"]
+          volumeMounts:
+            - name: git-volume
+              mountPath: /home/git
+              readOnly: false
+          securityContext:
+            readOnlyRootFilesystem: false
+            runAsUser: 0
+      containers:
+        - name: python
+          image: "{{ $.Values.platformTests.image | default "python" }}:{{ $.Values.platformTests.tag | default "3.10-slim" }}"
+          command: ['sh', './home/scripts/init-python-script.sh']
+          volumeMounts:
+            - name: test-volume
+              mountPath: /home/src
+              readOnly: false
+            - name: test-python-script-volume
+              mountPath: /home/scripts/init-python-script.sh
+              readOnly: false
+              subPath: "init-python-script.sh"
+            - name: git-volume
+              mountPath: /home/git
+              readOnly: false
+          env:
+            - name: TEST_SCRIPT
+              value: {{ $key | trimPrefix "confs/tests/python-test/" }}
+            - name: TEST_FOLDER
+              value: {{ $key | trimPrefix "confs/tests/python-test/" | trimSuffix ".py" }}
+            - name: OAUTHLIB_INSECURE_TRANSPORT
+              value: "True"
+            {{- if $.Values.core.authentication.openId.enabled }}
+            - name: "CORE_CLIENT_ID"
+              valueFrom:
+                secretKeyRef:
+                  name: "core-auth-creds"
+                  key: "clientId"
+            - name: "CORE_CLIENT_SECRET"
+              valueFrom:
+                secretKeyRef:
+                  name: "core-auth-creds"
+                  key: "clientSecret"
+            {{- if $.Values.core.ingress.enabled }}
+            {{- with (index $.Values.core.ingress.hosts 0) }}
+            - name: "DHCORE_ENDPOINT"
+              value: https://{{ .host }}
+            - name: "DHCORE_ISSUER"
+              value: https://{{ .host }}
+            {{- end }}
+            {{- end }}
+            {{- end }}
+          envFrom:
+            - configMapRef:
+                name: platform-common-env
+          securityContext:
+            readOnlyRootFilesystem: false
+            runAsUser: 0
+      volumes:
+        - name: test-volume
+          configMap:
+            name: {{ include "platform.fullname" $ }}-python-test
+        - name: test-python-script-volume
+          configMap:
+            name: {{ include "platform.fullname" $ }}-python-script-test
+        - name: git-volume
+          emptyDir: {}      
+      securityContext:
+        runAsUser: 0
+        fsGroup: 0
+        runAsGroup: 0
+      restartPolicy: Never
+  backoffLimit: 0
+---
+{{- end }}
+{{- end }}

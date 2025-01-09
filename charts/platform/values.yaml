@@ -1,0 +1,539 @@
+global:
+  cleanup:
+    deployments: false
+    statefulsets: false
+    ingress: false
+    pods: false
+    jobs: false
+    persistentVolumeClaims: false
+  service:
+    type: &serviceType "NodePort"
+  crd:
+    enabled: &globalCrd true
+  registry:
+    url: 192.168.49.2:30150
+    username: ""
+    password: ""
+    email: ""
+    secretName: ""
+  basicAuth:
+    enabled: false
+    username: ""
+    password: ""
+    secretName: ""
+  minio:
+    rootUserSecret: minio
+    rootUser: &minioRootUser minio
+    rootPassword: &minioRootPassword minio123
+    platformUserSecret: platform-minio-creds
+    platformUser: &platformUser platform
+    platformPassword: &platformPassword platform
+    argoSecret: &argoSecret argo-minio-creds
+    argoUser: &argoUser argo
+    argoPassword: &argoPassword argo1234
+    endpoint: &minioEndpoint "minio"
+    endpointPort: &minioEndpointPort "9000"
+    bucket: &minioBucket "datalake"
+    argoBucket: &argoBucket "argo"
+    protocol: &minioProtocol "http"
+  solr:
+    fullNameOverride: &solrFullNameOverride platform
+  externalHostAddress: &globalExternalUrl "192.168.49.2"
+  externalTls: false
+  securityContext:
+    runAsNonRoot: true
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+      - ALL
+
+docker-registry:
+  enabled: true
+  fullnameOverride: platform-docker-registry
+  className: nginx
+  service:
+    type: *serviceType
+    nodePort: 30150
+  ingress:
+    enabled: false
+    path: /
+    hosts:
+      - registry.platform.test
+  persistence:
+    accessMode: 'ReadWriteOnce'
+    enabled: true
+    size: 128Gi
+  updateStrategy:
+    type: Recreate
+
+coder:
+  enabled: true
+  username: test
+  password: Test12456@!
+  email: test@platform.test
+  template:
+    upgrade:
+      enabled: false
+      token: ""
+    customTemplates:
+      - name: jupyter
+        nodePort: "30040"
+        iconUrl: https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Jupyter_logo.svg/1200px-Jupyter_logo.svg.png
+        image: "ghcr.io/scc-digitalhub/jupyter-3-10:0.9.0"
+        image39: "ghcr.io/scc-digitalhub/jupyter-3-9:0.9.0"
+        image311: "ghcr.io/scc-digitalhub/jupyter-3-11:0.9.0"
+        privileged: false
+      - name: dremio
+        nodePort: "30120"
+        iconUrl: https://cdn.icon-icons.com/icons2/2699/PNG/512/dremio_logo_icon_168234.png
+        image: "dremio/dremio-oss:24.1.0"
+      - name: sqlpad
+        nodePort: "30140"
+        iconUrl: https://i.ibb.co/TrBDsZM/sqlpad.png
+        image: "smartcommunitylab/sqlpad:nonroot"
+      - name: grafana
+        nodePort: "30130"
+        iconUrl: https://cdn.icon-icons.com/icons2/2699/PNG/512/grafana_logo_icon_171048.png
+        image: "smartcommunitylab/grafana"
+      - name: vscode
+        nodePort: "30190"
+        iconUrl: https://user-images.githubusercontent.com/29654835/27530003-e78876b8-5a13-11e7-8863-83fbdb900f72.png
+        image: "codercom/enterprise-base:ubuntu"
+  coder:
+    image:
+      tag: v2.12.0
+    env:
+      - name: CODER_TELEMETRY
+        value: "false"
+      - name: CODER_PG_USERNAME
+        valueFrom:
+          secretKeyRef:
+            name: coder.coder-postgres-cluster.credentials.postgresql.acid.zalan.do
+            key: username
+      - name: CODER_PG_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: coder.coder-postgres-cluster.credentials.postgresql.acid.zalan.do
+            key: password
+      - name: CODER_PG_CONNECTION_URL
+        value: "postgres://$(CODER_PG_USERNAME):$(CODER_PG_PASSWORD)@coder-postgres-cluster:5432/coder"
+    ingress:
+      enable: false
+    service:
+      type: *serviceType
+      httpNodePort: "30170"
+
+postgres-operator:
+  enabled: true
+  databases:
+    platform:
+      enabled: true
+      volume:
+        size: 8Gi
+      resources:
+        requests:
+          cpu: 512m
+          memory: 1000Mi
+        limits:
+          cpu: "2"
+          memory: 2Gi
+    core:
+      enabled: true
+      volume:
+        size: 8Gi
+      resources:
+        requests:
+          cpu: 512m
+          memory: 1000Mi
+        limits:
+          cpu: "2"
+          memory: 2Gi
+    coder:
+      enabled: true
+      volume:
+        size: 8Gi
+      resources:
+        requests:
+          cpu: 512m
+          memory: 1000Mi
+        limits:
+          cpu: "2"
+          memory: 2Gi
+
+ext-postgres-operator:
+  enabled: true
+  postgres:
+    host: database-postgres-cluster
+    user: ""
+    password: ""
+    uri_args: " "
+    cloud_provider: ""
+    default_database: "postgres"
+  postgresCredsExistingSecrets:
+    username:
+      secretName: "platformadmin.database-postgres-cluster.credentials.postgresql.acid.zalan.do"
+      secretKey: "username"
+    password:
+      secretName: "platformadmin.database-postgres-cluster.credentials.postgresql.acid.zalan.do"
+      secretKey: "password"
+
+postgrest-operator:
+  enabled: true
+  postgres:
+    host: database-postgres-cluster
+    port: 5432
+    uri_args: "sslmode=disable"
+    default_database: "platform"
+    postgrest_service_type: NodePort
+  postgresCredsExistingSecrets:
+    username:
+      secretName: "platform-owner-user.database-postgres-cluster.credentials.postgresql.acid.zalan.do"
+      secretKey: "username"
+    password:
+      secretName: "platform-owner-user.database-postgres-cluster.credentials.postgresql.acid.zalan.do"
+      secretKey: "password"
+
+core:
+  enabled: true
+  minio:
+    endpoint: *minioEndpoint
+    endpointPort: *minioEndpointPort
+    bucket: *minioBucket
+    protocol: *minioProtocol
+    awsDefaultRegion: "us-west-1"
+    awsRegion: "us-west-1"
+    # Change the publicUrl value to the one you are using for accessing the minio-API from your browser, in the form "http/s://yourminioapiurl"
+    publicUrl: "http://192.168.49.2:30080"
+  service:
+    type: *serviceType
+    httpNodePort: "30180"
+  postgres:
+    host: database-postgres-cluster
+    database: platform
+    port: "5432"
+    schema: public
+  config:
+    rootUser: minio
+    rootPassword: minio123
+  authentication:
+    openId:
+      enabled: false
+  events:
+    enabled: false
+    rabbitmq:
+      enabled: false
+      host: "platform-rabbitmq"
+      port: "5672"
+      vhost: "/"
+      queue: "dhCoreQueue"
+      topic: "entityTopic"
+      routingKey: "entityRoutingKey"
+      credentials:
+        existingSecret:
+          name: "platform-rabbitmq-default-user"
+          usernameKey: "username"
+          passwordKey: "password"
+  solr:
+    enabled: true
+    url: "http://platform-solrcloud-common/solr"
+    user: solr
+    fullNameOverride: *solrFullNameOverride
+    collection:
+      name: "dhcore"
+      initialize:
+        enabled: false
+        image: smartcommunitylab/k8s-ansible:1.30.0-1.7.0-nonroot
+  coreAuthCreds:  # These are example creds, change them to your needs.
+    clientId: "m04bfbmd03m8sf4u9ucz54ti"
+    clientSecret: "9rb5215z0aqd7fadzxuoyqe3"
+  kanikoArgs: ""
+  additionalConfig:  # Configuration of pods created by Core
+    debug:
+      enableMetrics: false  # Enable/disable metrics. Metrics server deployment is required.
+      enableLogs: true  # Enable/disable logs
+    security:
+      disableRoot: true  # Enable/disable pods running as root
+    resources:  # Set resources requests/limits
+      cpuReq: "100m"
+      cpuLim: ""
+      memReq: "64m"
+      memLim: ""
+      gpuKey: "nvidia.com/gpu"
+  argoWorkflow:
+    configmap: artifact-repositories
+    key: artifact-repository
+    serviceAccount: argo-workflow
+    user: "8877"
+
+kubernetes-resource-manager:
+  enabled: true
+  service:
+    type: *serviceType
+    httpNodePort: "30220"
+  resourceSelectors:
+    secrets:
+      # list separated by ,
+      names: "(platform\\-owner|platform\\-reader|platform\\-writer).*"
+
+dremio-rest-server-operator:
+  enabled: true
+
+apigw-operator:
+  enabled: true
+
+jobs:
+  delete:
+    securityContext:
+      readOnlyRootFilesystem: true
+
+nakamasato-mysql-operator:
+  enabled: false
+
+mysql-operator:
+  enabled: false
+
+template-controller:
+  enabled: true
+  objectTemplate:
+    enabled: true
+
+dashboard:
+  replicaCount: 1
+  image:
+    repository: ghcr.io/scc-digitalhub/dh-dashboard
+    pullPolicy: IfNotPresent
+    tag: "0.1.2"
+  imagePullSecrets: []
+  nameOverride: ""
+  fullnameOverride: ""
+  serviceAccount:
+    create: true
+    automount: true
+    annotations: {}
+    name: "platform-dashboard"
+  podAnnotations: {}
+  podLabels: {}
+  podSecurityContext:
+    runAsUser: 65532
+    fsGroup: 65532
+  securityContext:
+    runAsUser: 65532
+    allowPrivilegeEscalation: false
+    runAsNonRoot: true
+    capabilities:
+      drop:
+        - ALL
+  service:
+    type: *serviceType
+    port: "8080"
+    httpNodePort: "30110"
+  ingress:
+    enabled: false
+    className: ""
+    annotations: {}
+    hosts:
+      - host: ""
+        paths:
+          - pathType: ImplementationSpecific
+            path: /
+    tls:
+    - secretName: ""
+      hosts:
+        - ""
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+  volumes:
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  oidc:
+    enabled: false
+    audience:
+      clientId: ""
+      externalSecret:
+        name: ""
+        key: ""
+    config:
+      issuer: ""
+  additional-components:
+    enabled: false
+    apps:
+      - name: ""
+        description: ""
+        service:
+          name: ""
+          port: ""
+        ingress:
+          enabled: false
+          annotations: {}
+          ingressClassName: ""
+          hosts: []
+          path: /
+          tls: []
+        redirectUrl: ""
+        oidcIssuerUrl: ""
+        existingSecret:
+          name: ""
+          clientId: ""
+          secretKey: ""
+
+solr-operator:
+  enabled: true
+  zookeeper-operator:
+    crd:
+      create: true
+
+solr:
+  enabled: true
+  replicas: 1
+  fullnameOverride: *solrFullNameOverride
+  # WARNING: the following feature is currently bugged, waiting for a Solr official fix!
+  # Uncomment the following options to use solr with the unprivileged solr user and a randomly generated password
+  # Be sure to also set core.solr.collection.initialize to true in this values file.
+  # solrOptions:
+  #   security:
+  #     authenticationType: Basic
+  #     probesRequireAuth: true
+
+minio:
+  enabled: true
+  rootUser: *minioRootUser
+  rootPassword: *minioRootPassword
+  mode: standalone
+  replicas: 1
+  ingress:
+    enabled: false
+  persistence:
+    enabled: true
+    size: 128Gi
+  buckets:
+    - name: datalake
+      policy: none
+      purge: false
+    - name: argo
+      policy: none
+      purge: false
+  resources:
+    requests:
+      memory: 0.5Gi
+  service:
+    type: *serviceType
+    port: 9000
+    nodePort: 30080
+  consoleService:
+    type: *serviceType
+    port: 9001
+    nodePort: 30090
+  fullnameOverride: minio
+  oidc:
+    enabled: false
+    configUrl: ""
+    clientId: ""
+    clientSecret: ""
+    # Provide existing client secret from the Kubernetes Secret resource, existing secret will have priority over `clientId` and/or `clientSecret``
+    existingClientSecretName: ""
+    existingClientIdKey: ""
+    existingClientSecretKey: ""
+    claimName: ""
+    scopes: ""
+    redirectUri: ""
+    # Can leave empty
+    claimPrefix: ""
+    comment: ""
+    displayName: ""
+  deploymentUpdate:
+    type: Recreate
+  users:
+    - accessKey: *platformUser
+      secretKey: *platformPassword
+      policy: readwriteplatform
+    - accessKey: *argoUser
+      secretKey: *argoPassword
+      policy: readwriteargo
+  policies:
+    - name: readwriteplatform
+      statements:
+        - effect: Allow
+          resources:
+            - 'arn:aws:s3:::datalake/*'
+          actions:
+            - "s3:*"
+    - name: readwriteargo
+      statements:
+        - effect: Allow
+          resources:
+            - 'arn:aws:s3:::argo/*'
+          actions:
+            - "s3:*"
+
+minio-operator:
+  enabled: true
+  minio:
+    accessKey: *minioRootUser
+    secretKey: *minioRootPassword
+    endpoint: *minioEndpoint
+    endpointPort: *minioEndpointPort
+    bucket: *minioBucket
+    protocol: *minioProtocol
+
+platformTests:
+  preRelease: false   ## Used for installing pre release packages
+  image: ""
+  tag: ""
+  packages:
+  - name: "digitalhub[full]"
+    tag: "0.9.0"
+  - name: "digitalhub-runtime-python"
+    tag: "0.9.0"
+  - name: "digitalhub-runtime-container"
+    tag: "0.9.0"
+  - name: "digitalhub-runtime-dbt"
+    tag: "0.9.0"
+  - name: "digitalhub-runtime-kfp"
+    tag: "0.9.0"
+  - name: "digitalhub-runtime-modelserve"
+    tag: "0.9.0"
+
+argo-workflows:
+  enabled: true
+  singleNamespace: true
+  workflow:
+    serviceAccount:
+      create: true
+      name: argo-workflow
+  controller:
+    configMap:
+      create: true
+    serviceAccount:
+      name: argo-workflow-controller
+    workflowDefaults:
+      spec:
+        serviceAccountName: argo-workflow
+  server:
+    enabled: false
+  artifactRepositoryRef:
+    artifact-repositories:
+      annotations:
+        workflows.argoproj.io/default-artifact-repository: artifact-repository
+      artifact-repository:
+        archiveLogs: false
+        s3:
+          accessKeySecret:
+            name: *argoSecret
+            key: accesskey
+          secretKeySecret:
+            name: *argoSecret
+            key: secretkey
+          insecure: true
+          bucket: *argoBucket
+          endpoint: minio:9000

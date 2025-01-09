@@ -1,0 +1,10 @@
+{{- if .Values.minio.enabled }}
+apiVersion: v1
+data:
+  platformUser: {{ .Values.global.minio.platformUser | b64enc }}
+  platformPassword: {{ .Values.global.minio.platformPassword | b64enc }}
+kind: Secret
+metadata:
+  name: {{ .Values.global.minio.platformUserSecret }}
+type: Opaque
+{{- end }}
