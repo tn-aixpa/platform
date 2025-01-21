@@ -19,6 +19,21 @@ entries:
   core:
   - apiVersion: v2
     appVersion: 0.9.0
+    created: "2025-01-21T08:39:10.045173204Z"
+    description: Core backend application for the platform.
+    digest: d4ea5ad659b1edc57cfaad7c318e421cb472467dfff794189b9b66da18b63fc1
+    maintainers:
+    - name: ffais
+      url: https://github.com/ffais
+    - name: calcagiara
+      url: https://github.com/Calcagiara
+    name: core
+    type: application
+    urls:
+    - https://github.com/tn-aixpa/platform/releases/download/core-0.3.2/core-0.3.2.tgz
+    version: 0.3.2
+  - apiVersion: v2
+    appVersion: 0.9.0
     created: "2025-01-09T14:33:36.782214066Z"
     description: Core backend application for the platform.
     digest: 7939b4c1c92efabaf1880eb5bc3b00a04e0e0a40dce8d09848fe76bbe3293039
@@ -214,4 +229,4 @@ entries:
     urls:
     - https://github.com/tn-aixpa/platform/releases/download/postgrest-operator-0.1.7/postgrest-operator-0.1.7.tgz
     version: 0.1.7
-generated: "2025-01-09T14:58:45.561440213Z"
+generated: "2025-01-21T08:39:10.045184074Z"
