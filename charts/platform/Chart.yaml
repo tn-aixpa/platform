@@ -23,7 +23,7 @@ dependencies:
   repository: https://helm.coder.com/v2
   condition: coder.enabled
 - name: core
-  version: "0.3.1"
+  version: "0.3.2"
   repository: https://tn-aixpa.github.io/platform/
   condition: core.enabled
 - name: kubernetes-resource-manager
