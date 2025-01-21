@@ -112,6 +112,90 @@ entries:
     version: 0.1.5
   platform:
   - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2025-01-21T08:44:40.037609608Z"
+    dependencies:
+    - condition: argo-workflows.enabled
+      name: argo-workflows
+      repository: https://argoproj.github.io/argo-helm
+      version: 0.45.1
+    - condition: apigw-operator.enabled
+      name: apigw-operator
+      repository: https://tn-aixpa.github.io/platform/
+      version: 0.1.8
+    - condition: coder.enabled
+      name: coder
+      repository: https://helm.coder.com/v2
+      version: 2.12.0
+    - condition: core.enabled
+      name: core
+      repository: https://tn-aixpa.github.io/platform/
+      version: 0.3.2
+    - condition: kubernetes-resource-manager.enabled
+      name: kubernetes-resource-manager
+      repository: https://tn-aixpa.github.io/platform/
+      version: 0.2.6
+    - condition: dremio-rest-server-operator.enabled
+      name: dremio-rest-server-operator
+      repository: https://tn-aixpa.github.io/platform/
+      version: 0.1.5
+    - condition: docker-registry.enabled
+      name: docker-registry
+      repository: https://helm.twun.io
+      version: 2.2.2
+    - condition: ext-postgres-operator.enabled
+      name: ext-postgres-operator
+      repository: https://tn-aixpa.github.io/platform/
+      version: 1.2.6
+    - condition: minio.enabled
+      name: minio
+      repository: https://charts.min.io/
+      version: 5.1.0
+    - condition: postgres-operator.enabled
+      name: postgres-operator
+      repository: https://opensource.zalando.com/postgres-operator/charts/postgres-operator
+      tags:
+      - operator
+      version: 1.11.0
+    - condition: postgrest-operator.enabled
+      name: postgrest-operator
+      repository: https://tn-aixpa.github.io/platform/
+      version: 0.1.7
+    - condition: template-controller.enabled
+      name: template-controller
+      repository: https://kluctl.github.io/charts
+      tags:
+      - operator
+      version: 0.2.5
+    - condition: solr-operator.enabled
+      name: solr-operator
+      repository: https://solr.apache.org/charts
+      tags:
+      - operator
+      version: 0.8.1
+    - condition: solr.enabled
+      name: solr
+      repository: https://solr.apache.org/charts
+      version: 0.8.1
+    - condition: minio-operator.enabled
+      name: minio-operator
+      repository: https://tn-aixpa.github.io/platform/
+      version: 0.1.5
+    description: An open-source platform for interoperability of data and services,
+      built by integrating several open-source projects to manage, elaborate, expose
+      and serve data through modern standards.
+    digest: a8d7cc1bb9e0f45172451c8cf486002268ef9b79b4ab25fa299de2738ef75364
+    maintainers:
+    - name: ffais
+      url: https://github.com/ffais
+    - name: calcagiara
+      url: https://github.com/Calcagiara
+    name: platform
+    type: application
+    urls:
+    - https://github.com/tn-aixpa/platform/releases/download/platform-1.0.0/platform-1.0.0.tgz
+    version: 1.0.0
+  - apiVersion: v2
     appVersion: 0.9.0
     created: "2025-01-09T14:58:45.561427659Z"
     dependencies:
@@ -229,4 +313,4 @@ entries:
     urls:
     - https://github.com/tn-aixpa/platform/releases/download/postgrest-operator-0.1.7/postgrest-operator-0.1.7.tgz
     version: 0.1.7
-generated: "2025-01-21T08:39:10.045184074Z"
+generated: "2025-01-21T08:44:40.037623113Z"
