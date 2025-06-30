@@ -1,0 +1,32 @@
+# SPDX-FileCopyrightText: © 2025 DSLab - Fondazione Bruno Kessler
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+{{ if and .Values.core.enabled ( index .Values "postgres-operator" "databases" "core" "enabled" ) -}}
+apiVersion: "acid.zalan.do/v1"
+kind: postgresql
+metadata:
+  name: core-postgres-cluster
+spec:
+  teamId: "core"
+  volume:
+    size: {{ index .Values "postgres-operator" "databases" "core" "volume" "size" }}
+  numberOfInstances: 1
+  users:
+    coreadmin:  # database owner
+    - superuser
+    - createdb
+    coreuser: []
+    {{- if .Values.core.sts.enabled }}
+    stsuser: []
+    {{- end }}
+  databases:
+    core: coreuser
+    {{- if .Values.core.sts.enabled }}
+    sts: stsuser
+    {{- end }}
+  postgresql:
+    version: "15"
+  resources:
+  {{- toYaml ( index .Values "postgres-operator" "databases" "core" "resources" ) | nindent 4 }}
+{{- end }}

@@ -1,4 +1,8 @@
-{{- if .Values.solr.collection.initialize.enabled }}
+# SPDX-FileCopyrightText: © 2025 DSLab - Fondazione Bruno Kessler
+#
+# SPDX-License-Identifier: Apache-2.0
+
+{{ if and .Values.solr.collection.initialize.enabled .Values.solr.enabled -}}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -24,7 +28,7 @@ spec:
             - name: "SOLR_ADMIN_PWD"
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.solr.fullNameOverride }}-solrcloud-security-bootstrap
+                  name: {{ .Values.solr.collection.initialize.securityJsonSecret }}
                   key: admin
       containers:
         - name: solr-init-job
@@ -39,16 +43,10 @@ spec:
             - name: "SOLR_ADMIN_PWD"
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.solr.fullNameOverride }}-solrcloud-security-bootstrap
+                  name: {{ .Values.solr.collection.initialize.securityJsonSecret }}
                   key: admin
       restartPolicy: Never
       volumes:
-        - name: init-files
-          configMap:
-            name: coder-init
-        - name: custom-template
-          configMap:
-            name: coder-custom-template
         - name: init-config
           configMap:
             name: solr-init-config

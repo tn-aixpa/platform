@@ -1,0 +1,33 @@
+# SPDX-FileCopyrightText: © 2025 DSLab - Fondazione Bruno Kessler
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+{{ if ( index .Values "postgres-operator" "databases" "digitalhub" "enabled" ) -}}
+apiVersion: "acid.zalan.do/v1"
+kind: postgresql
+metadata:
+  name: database-postgres-cluster
+spec:
+  teamId: "digitalhub"
+  volume:
+    size: {{ index .Values "postgres-operator" "databases" "digitalhub" "volume" "size" }}
+  numberOfInstances: 1
+  users:
+    digitalhubadmin:
+    - superuser
+    - createdb
+  postgresql:
+    version: "15"
+  preparedDatabases:
+    digitalhub:
+      defaultUsers: true
+      schemas:
+        public:
+          defaultUsers: true
+      extensions:
+        timescaledb: public
+        postgis: public
+        vector: public
+  resources:
+  {{- toYaml ( index .Values "postgres-operator" "databases" "digitalhub" "resources" ) | nindent 4 }}
+{{- end }}

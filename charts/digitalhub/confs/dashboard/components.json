@@ -1,0 +1,92 @@
+{{ $externalUrl := .Values.global.externalHostAddress -}}
+[
+{{- if .Values.minio.enabled }}
+  {
+    "slug": "minio",
+    "name": "Minio",
+    "description": "S3-compatible datalake",
+    "order": 3,
+    "port": "",
+    {{- if (index .Values "minio" "consoleIngress" "enabled") }}
+    {{- with (index .Values "minio" "consoleIngress" "hosts" 0) }}
+    "link": "https://{{ . }}"
+    {{- end }}
+    {{- else }}
+    "link": "http://{{ $externalUrl }}:{{ .Values.minio.consoleService.nodePort }}"
+    {{- end }}
+  },
+{{- end }}
+{{- if (index .Values "open-webui" "enabled") }}
+  {
+    "slug": "open-webui",
+    "name": "Open WebUI",
+    "description": "Open WebUI is an extensible, self-hosted AI interface that adapts to your workflow, all while operating entirely offline.",
+    "order": 4,
+    "port": "",
+    {{- if (index .Values "open-webui" "ingress" "enabled") }}
+    {{- with (index .Values "open-webui" "ingress" "host") }}
+    "link": "https://{{ . }}"
+    {{- end }}
+    {{- else }}
+    "link": "http://{{ $externalUrl }}:{{ .Values.minio.consoleService.nodePort }}"
+    {{- end }}
+  },
+{{- end }}
+  {
+    "slug": "coder",
+    "name": "Coder",
+    "description": "Workspace manager",
+    "order": 1,
+    "port": "",
+    {{- if .Values.coder.coder.ingress.enable }}
+    "link": "https://{{ .Values.coder.coder.ingress.host }}"
+    {{- else }}
+    "link": "http://{{ $externalUrl }}:{{ .Values.coder.coder.service.httpNodePort }}"
+    {{- end }}
+  },
+  {
+    "slug": "krm",
+    "name": "Kubernetes Resource Manager",
+    "description": "Manager for Kubernetes Resources",
+    "order": 2,
+    "port": "",
+    {{- if (index .Values "kubernetes-resource-manager" "ingress" "enabled") }}
+    {{- with (index .Values "kubernetes-resource-manager" "ingress" "hosts" 0) }}
+    "link": "https://{{ .host }}"
+    {{- end }}
+    {{- else }}
+    "link": "http://{{ $externalUrl }}:{{ index .Values "kubernetes-resource-manager" "service" "nodePort"}}"
+    {{- end }}
+  },
+{{- if (index .Values.dashboard "additional-components" "enabled") }}
+{{- range (index .Values.dashboard "additional-components" "apps") }}
+  {
+    "slug": {{ .name | quote }},
+    "name": {{ .name | title | quote }},
+    "description": {{ .description | quote }},
+    "port": "",
+  {{- if .ingress.enabled }}
+    {{- with (index . "ingress" "hosts" 0) }}
+    "link": "https://{{ . }}"
+    {{- end }}
+  {{- else }}
+    "link": "http://{{ .service.name }}:{{ .service.port }}"
+  {{- end }}
+  },
+{{- end}}
+{{- end }}
+  {
+    "slug": "core",
+    "name": "Core",
+    "description": "Core Management UI",
+    "order": 0,
+    "port": "",
+    {{- if .Values.core.ingress.enabled }}
+    {{- with (index .Values.core.ingress.hosts 0) }}
+    "link": "https://{{ .host }}"
+    {{- end }}
+    {{- else }}
+    "link": "http://{{ $externalUrl }}:{{ .Values.core.service.httpNodePort }}"
+    {{- end }}
+  }
+]

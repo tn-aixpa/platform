@@ -1,1 +1,0 @@
-{"auths":{"{{ .Values.global.registry.url }}":{"username":"{{ .Values.global.registry.username }}","password":"{{ .Values.global.registry.password }}","email":"{{ .Values.global.registry.email }}","auth":"{{ include "platform.registryAuth" . }}"}}}

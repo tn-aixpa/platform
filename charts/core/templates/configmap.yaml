@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: © 2025 DSLab - Fondazione Bruno Kessler
+#
+# SPDX-License-Identifier: Apache-2.0
+
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -6,11 +10,12 @@ data:
   DH_ENDPOINT: "{{ include "core.endpoint" . }}"
   K8S_NAMESPACE: {{ .Release.Namespace }}
   JDBC_PLATFORM: postgresql
-  JDBC_URL: "jdbc:postgresql://core-postgres-cluster:5432/core"
+  JDBC_URL: {{ printf "%s%s:%s/%s" "jdbc:postgresql://" .Values.postgres.host .Values.postgres.port .Values.postgres.database }}
   JDBC_DRIVER: org.postgresql.Driver
-  JDBC_DIALECT: org.hibernate.dialect.PostgreSQLDialect
-  DH_CONFIG_COMMON_SECRETS: platform-common-creds
-  DH_CONFIG_COMMON_MAPS: platform-common-env
+{{- if not .Values.sts.enabled }}
+  DH_CONFIG_COMMON_SECRETS: digitalhub-common-creds
+{{- end }}
+  DH_CONFIG_COMMON_MAPS: digitalhub-common-env
   LOG_LEVEL: INFO
   RUNTIME_DBT_IMAGE: {{ .Values.runtime.dbt.image }}:{{ .Values.runtime.dbt.tag }}
   RUNTIME_KFP_IMAGE: {{ .Values.runtime.kfp.image }}:{{ .Values.runtime.kfp.tag }}
@@ -18,20 +23,7 @@ data:
   RUNTIME_PYTHON_IMAGE_3_10: {{ .Values.runtime.python.image }}:{{ .Values.runtime.python.tag3_10 }}
   RUNTIME_PYTHON_IMAGE_3_11: {{ .Values.runtime.python.image }}:{{ .Values.runtime.python.tag3_11 }}
   RUNTIME_HUGGINGFACE_SERVE_IMAGE: {{ .Values.runtime.huggingFace.image }}:{{ .Values.runtime.huggingFace.tag }}
-  {{- if .Values.events.enabled }}
-  ENABLE_EVENTS: {{ .Values.events.enabled | quote }} 
-  {{- if .Values.events.rabbitmq.enabled }}
-  RABBITMQ_ENABLE: {{ .Values.events.rabbitmq.enabled | quote }}
-  RABBITMQ_HOST: {{ .Values.events.rabbitmq.host }}
-  RABBITMQ_PORT: {{ .Values.events.rabbitmq.port | quote }}
-  RABBITMQ_VHOST: {{ .Values.events.rabbitmq.vhost }}
-  RABBITMQ_QUEUE: {{ .Values.events.rabbitmq.queue }}
-  RABBITMQ_TOPIC: {{ .Values.events.rabbitmq.topic }}
-  RABBITMQ_ROUTING_KEY: {{ .Values.events.rabbitmq.routingKey }}
-{{- end }}
-{{- end }}
 {{- if .Values.solr.enabled }}
-  ENABLE_SOLR: {{ .Values.solr.enabled | quote }}
   SOLR_URL: {{ .Values.solr.url }}
   SOLR_COLLECTION: {{ .Values.solr.collection.name }}
   {{- if .Values.solr.collection.initialize.enabled }}
@@ -43,10 +35,10 @@ data:
   DH_AUTH_BASIC_PASSWORD: {{ .Values.authentication.basic.password }}
 {{- end }}
 {{- if .Values.authentication.openId.enabled }}
-{{- if .Values.authentication.openId.jwtAudience }}
+  {{- if .Values.authentication.openId.jwtAudience }}
   DH_AUTH_JWT_ISSUER_URI: {{ .Values.authentication.openId.issuerUri }}
   DH_AUTH_JWT_AUDIENCE: {{ .Values.authentication.openId.jwtAudience }}
-{{- end }}
+  {{- end }}
   DH_AUTH_JWT_CLAIM: {{ .Values.authentication.openId.jwtClaim }}
   DH_AUTH_OIDC_ISSUER_URI: {{ .Values.authentication.openId.issuerUri }}
   DH_AUTH_OIDC_SCOPE: {{ .Values.authentication.openId.scope }}
@@ -54,8 +46,6 @@ data:
 {{- end }}
 {{- if .Values.global.registry.url }}
   DOCKER_REGISTRY: {{ .Values.global.registry.url }}
-{{- end }}
-{{- if and .Values.global.registry.username .Values.global.registry.password .Values.global.registry.email }}
   KANIKO_IMAGE_PREFIX: {{ .Values.registry.kaniko.imagePrefix | default .Release.Namespace }}
   DOCKER_REGISTRY_SECRET: {{ .Values.global.registry.secretName }}
 {{- end }}
@@ -70,10 +60,13 @@ data:
 {{- end }}
   JWT_ACCESS_TOKEN_DURATION: {{ .Values.coreTokens.accessTokenDuration | quote }}
   JWT_REFRESH_TOKEN_DURATION: {{ .Values.coreTokens.refreshTokenDuration | quote }}
-  AWS_DEFAULT_REGION: {{ .Values.minio.awsDefaultRegion }}
-  AWS_REGION: {{ .Values.minio.awsRegion }}
-  S3_ENDPOINT: {{ .Values.minio.publicUrl }}
-  S3_BUCKET: {{ .Values.minio.bucket }}
+  S3_CREDENTIALS_PROVIDER: {{ if and .Values.s3.enabled (not .Values.s3.dynamicCreds.enabled) }}"true"{{ else }}"false"{{ end }}
+{{- if not .Values.s3.enabled }}
+  AWS_DEFAULT_REGION: {{ .Values.s3.region }}
+  FILES_DEFAULT_STORE: s3://{{ .Values.s3.bucket }}
+  S3_ENDPOINT_URL: {{ .Values.s3.publicUrl }}
+  S3_BUCKET: {{ .Values.s3.bucket }}
+{{- end }}
 {{- if .Values.templates }}
   K8S_TEMPLATES: {{ include "core.templates" . | quote }}
 {{- end }}
@@ -85,14 +78,36 @@ data:
   K8S_RESOURCE_CPU_LIMIT: {{ .Values.additionalConfig.resources.cpuLim | quote }}
   K8S_RESOURCE_MEM_DEFAULT: {{ .Values.additionalConfig.resources.memReq | quote }}
   K8S_RESOURCE_MEM_LIMIT: {{ .Values.additionalConfig.resources.memLim | quote }}
+  K8S_RESOURCE_PVC_DEFAULT: {{ .Values.additionalConfig.resources.pvcReq | quote }}
+  K8S_RESOURCE_PVC_LIMIT: {{ .Values.additionalConfig.resources.pvcLim | quote }}
   K8S_RESOURCE_GPU_KEY: {{ .Values.additionalConfig.resources.gpuKey | quote }}
   K8S_SERVICE_TYPE: {{ .Values.additionalConfig.service.type | quote }}
   K8S_JOB_DEADLINE: {{ .Values.additionalConfig.job.deadline | quote }}
   K8S_JOB_SUSPEND: {{ .Values.additionalConfig.job.jobSuspend | quote }}
+{{- if .Values.kubeai.enabled }}
+  RUNTIME_KUBEAI_ENDPOINT: {{ printf "%s%s:%s" "http://" .Values.kubeai.serviceName .Values.kubeai.port | quote }}
+{{- end }}
   ARGOWORKFLOWS_ARTIFACTS_CONFIGMAP: {{ .Values.argoWorkflow.configmap }}
   ARGOWORKFLOWS_ARTIFACTS_KEY: {{ .Values.argoWorkflow.key }}
   ARGOWORKFLOWS_SERVICE_ACCOUNT: {{ .Values.argoWorkflow.serviceAccount }}
   ARGOWORKFLOWS_USER: {{ .Values.argoWorkflow.user | quote }}
 {{- with .Values.configmapAdditionalEnv }}
-{{- toYaml . | nindent 2 }}
+  {{- toYaml . | nindent 2 }}
 {{- end }}
+{{- if .Values.sts.enabled }}
+  {{- if .Values.sts.databaseProvider.enabled }}
+  DB_CREDENTIALS_PROVIDER: {{ .Values.sts.databaseProvider.enabled | quote }}
+  DB_CREDENTIALS_DATABASE: {{ .Values.databaseProvider.database }}
+  DB_CREDENTIALS_ENDPOINT:  http://{{ .Release.Name }}-core-sts:8080
+  DB_CREDENTIALS_CLAIM: {{ .Values.sts.jwt.claim }}
+  DB_CREDENTIALS_ROLE: {{ .Values.sts.credentials.roles }}
+  {{- end }}
+  MINIO_CREDENTIALS_PROVIDER: {{ if .Values.s3.dynamicCreds.enabled }}"true"{{ else }}"false"{{ end }}
+  {{- if .Values.s3.dynamicCreds.enabled }}
+  MINIO_CREDENTIALS_ENDPOINT: {{ .Values.s3.publicUrl }}
+  MINIO_CREDENTIALS_REGION: {{ .Values.s3.region }}
+  {{- end }}
+{{- end }}
+  LUCENE_INDEX_PATH: {{ .Values.lucene.indexPath | quote }}
+  LUCENE_REINDEX: {{ .Values.lucene.reindex | quote }}
+  K8S_RESOURCE_PVC_STORAGE_CLASS: {{ .Values.defaultStorageClass | quote }}
