@@ -1,4 +1,4 @@
-# SCC-Digitalhub Community Kubernetes Helm Charts
+# AIxPA Core Platform Community Kubernetes Helm Charts
 
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/tn-aixpa/platform/release.yaml?event=push) [![license](https://img.shields.io/badge/license-AGPL%20V3-blue)](https://github.com/tn-aixpa/platform/LICENSE) ![Status](https://img.shields.io/badge/status-stable-gold)
 
