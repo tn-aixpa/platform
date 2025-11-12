@@ -7,7 +7,7 @@ SPDX-License-Identifier: Apache-2.0
 # kubernetes-resource-manager
 
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/scc-digitalhub/digitalhub/release.yaml?event=push) [![license](https://img.shields.io/badge/license-Apache%202.0-blue)](https://github.com/scc-digitalhub/digitalhub/tree/main/charts/kubernetes-resource-manager/LICENSE) ![GitHub Release](https://img.shields.io/github/v/release/scc-digitalhub/digitalhub?filter=kubernetes-resource-manager*)
-![Status](https://img.shields.io/badge/status-stable-gold) ![Version: 0.2.9](https://img.shields.io/badge/Version-0.2.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.2.3](https://img.shields.io/badge/AppVersion-1.2.3-informational?style=flat-square)
+![Status](https://img.shields.io/badge/status-stable-gold) ![Version: 0.2.16](https://img.shields.io/badge/Version-0.2.16-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.2.3](https://img.shields.io/badge/AppVersion-1.2.3-informational?style=flat-square)
 
 A manager for resources in Kubernetes. The tool allows for monitoring and managing some of the standard Kubernetes resources (PersistentVolumeClaim, Services, Deployments, Jobs, and Secrets) as well as for managing a selection of Custom Resources.
 
@@ -51,6 +51,54 @@ helm repo add digitalhub https://scc-digitalhub.github.io/digitalhub/
 		<th>Default</th>
 	</thead>
 	<tbody>
+		<tr>
+			<td id="global"><a href="./values.yaml#L6">global</a></td>
+			<td>
+object
+</td>
+			<td>Global values</td>
+      <td>
+				<div style="max-width: 300px;">
+<details>
+<summary>+Expand</summary>
+<pre lang="json">
+{
+  "externalHostAddress": "",
+  "externalTls": false
+}
+</pre>
+</details>
+</div>
+			</td>
+		</tr>
+		<tr>
+			<td id="global--externalHostAddress"><a href="./values.yaml#L8">global.externalHostAddress</a></td>
+			<td>
+string
+</td>
+			<td></td>
+      <td>
+				<div style="max-width: 300px;">
+<pre lang="json">
+""
+</pre>
+</div>
+			</td>
+		</tr>
+		<tr>
+			<td id="global--externalTls"><a href="./values.yaml#L10">global.externalTls</a></td>
+			<td>
+bool
+</td>
+			<td></td>
+      <td>
+				<div style="max-width: 300px;">
+<pre lang="json">
+false
+</pre>
+</div>
+			</td>
+		</tr>
 		<tr>
 			<td id="affinity"><a href="./values.yaml#L14">affinity</a></td>
 			<td>
@@ -197,54 +245,6 @@ string
 			</td>
 		</tr>
 		<tr>
-			<td id="global"><a href="./values.yaml#L6">global</a></td>
-			<td>
-object
-</td>
-			<td>Global values</td>
-      <td>
-				<div style="max-width: 300px;">
-<details>
-<summary>+Expand</summary>
-<pre lang="json">
-{
-  "externalHostAddress": "",
-  "externalTls": false
-}
-</pre>
-</details>
-</div>
-			</td>
-		</tr>
-		<tr>
-			<td id="global--externalHostAddress"><a href="./values.yaml#L8">global.externalHostAddress</a></td>
-			<td>
-string
-</td>
-			<td></td>
-      <td>
-				<div style="max-width: 300px;">
-<pre lang="json">
-""
-</pre>
-</div>
-			</td>
-		</tr>
-		<tr>
-			<td id="global--externalTls"><a href="./values.yaml#L10">global.externalTls</a></td>
-			<td>
-bool
-</td>
-			<td></td>
-      <td>
-				<div style="max-width: 300px;">
-<pre lang="json">
-false
-</pre>
-</div>
-			</td>
-		</tr>
-		<tr>
 			<td id="image"><a href="./values.yaml#L36">image</a></td>
 			<td>
 object
@@ -358,6 +358,20 @@ object
 			</td>
 		</tr>
 		<tr>
+			<td id="ingress--enabled"><a href="./values.yaml#L53">ingress.enabled</a></td>
+			<td>
+bool
+</td>
+			<td>Enable/Disable ingress</td>
+      <td>
+				<div style="max-width: 300px;">
+<pre lang="json">
+false
+</pre>
+</div>
+			</td>
+		</tr>
+		<tr>
 			<td id="ingress--annotations"><a href="./values.yaml#L55">ingress.annotations</a></td>
 			<td>
 object
@@ -384,20 +398,6 @@ string
 				<div style="max-width: 300px;">
 <pre lang="json">
 ""
-</pre>
-</div>
-			</td>
-		</tr>
-		<tr>
-			<td id="ingress--enabled"><a href="./values.yaml#L53">ingress.enabled</a></td>
-			<td>
-bool
-</td>
-			<td>Enable/Disable ingress</td>
-      <td>
-				<div style="max-width: 300px;">
-<pre lang="json">
-false
 </pre>
 </div>
 			</td>
@@ -560,6 +560,20 @@ object
 			</td>
 		</tr>
 		<tr>
+			<td id="oidc--enabled"><a href="./values.yaml#L83">oidc.enabled</a></td>
+			<td>
+bool
+</td>
+			<td>Enable/Disable OIDC authentication</td>
+      <td>
+				<div style="max-width: 300px;">
+<pre lang="json">
+false
+</pre>
+</div>
+			</td>
+		</tr>
+		<tr>
 			<td id="oidc--access"><a href="./values.yaml#L85">oidc.access</a></td>
 			<td>
 object
@@ -690,20 +704,6 @@ string
 				<div style="max-width: 300px;">
 <pre lang="json">
 ""
-</pre>
-</div>
-			</td>
-		</tr>
-		<tr>
-			<td id="oidc--enabled"><a href="./values.yaml#L83">oidc.enabled</a></td>
-			<td>
-bool
-</td>
-			<td>Enable/Disable OIDC authentication</td>
-      <td>
-				<div style="max-width: 300px;">
-<pre lang="json">
-false
 </pre>
 </div>
 			</td>
@@ -896,7 +896,21 @@ string
 			</td>
 		</tr>
 		<tr>
-			<td id="rbac"><a href="./values.yaml#L128">rbac</a></td>
+			<td id="priorityClassName"><a href="./values.yaml#L128">priorityClassName</a></td>
+			<td>
+string
+</td>
+			<td>Name of the priority class, leave empty to not set any.</td>
+      <td>
+				<div style="max-width: 300px;">
+<pre lang="json">
+""
+</pre>
+</div>
+			</td>
+		</tr>
+		<tr>
+			<td id="rbac"><a href="./values.yaml#L131">rbac</a></td>
 			<td>
 object
 </td>
@@ -913,98 +927,28 @@ object
   "namespaced": true,
   "roles": [
     {
-      "apiGroups": "db.movetokube.com",
-      "crd": true,
-      "resources": [
-        "postgresusers",
-        "postgres"
-      ],
-      "verbs": [
-        "get",
-        "list",
-        "create",
-        "delete",
-        "patch"
-      ]
-    },
-    {
-      "apiGroups": "operator.dremiorestserver.com",
-      "crd": true,
-      "resources": [
-        "dremiorestservers"
-      ],
-      "verbs": [
-        "get",
-        "list",
-        "create",
-        "delete",
-        "patch"
-      ]
-    },
-    {
-      "apiGroups": "operator.postgrest.org",
-      "crd": true,
-      "resources": [
-        "postgrests"
-      ],
-      "verbs": [
-        "get",
-        "list",
-        "create",
-        "delete",
-        "patch"
-      ]
-    },
-    {
-      "apiGroups": "minio.scc-digitalhub.github.io",
-      "crd": true,
-      "resources": [
-        "buckets",
-        "policies",
-        "users"
-      ],
-      "verbs": [
-        "get",
-        "list",
-        "create",
-        "delete",
-        "patch"
-      ]
-    },
-    {
-      "apiGroups": "operator.scc-digitalhub.github.io",
-      "crd": true,
-      "resources": [
-        "apigws"
-      ],
-      "verbs": [
-        "get",
-        "list",
-        "create",
-        "delete",
-        "patch"
-      ]
-    },
-    {
-      "apiGroups": "batch",
+      "apiGroups": "",
       "crd": false,
       "resources": [
-        "jobs"
+        "persistentvolumeclaims"
       ],
       "verbs": [
+        "create",
+        "delete",
         "get",
         "list",
-        "delete"
+        "patch"
       ]
     },
     {
-      "apiGroups": "apps",
+      "apiGroups": "",
       "crd": false,
       "resources": [
-        "deployments",
-        "replicasets"
+        "pods",
+        "pods/log"
       ],
       "verbs": [
+        "create",
         "get",
         "list"
       ]
@@ -1013,21 +957,7 @@ object
       "apiGroups": "",
       "crd": false,
       "resources": [
-        "persistentvolumeclaims"
-      ],
-      "verbs": [
-        "get",
-        "list",
-        "create",
-        "delete",
-        "patch"
-      ]
-    },
-    {
-      "apiGroups": "",
-      "crd": false,
-      "resources": [
-        "services"
+        "resourcequotas"
       ],
       "verbs": [
         "get",
@@ -1047,24 +977,94 @@ object
     },
     {
       "apiGroups": "",
+      "crd": false,
       "resources": [
-        "pods",
-        "pods/log"
-      ],
-      "verbs": [
-        "get",
-        "list",
-        "create"
-      ]
-    },
-    {
-      "apiGroups": "",
-      "resources": [
-        "resourcequotas"
+        "services"
       ],
       "verbs": [
         "get",
         "list"
+      ]
+    },
+    {
+      "apiGroups": "apps",
+      "crd": false,
+      "resources": [
+        "deployments",
+        "replicasets"
+      ],
+      "verbs": [
+        "get",
+        "list"
+      ]
+    },
+    {
+      "apiGroups": "batch",
+      "crd": false,
+      "resources": [
+        "jobs"
+      ],
+      "verbs": [
+        "delete",
+        "get",
+        "list"
+      ]
+    },
+    {
+      "apiGroups": "db.movetokube.com",
+      "crd": true,
+      "resources": [
+        "postgres",
+        "postgresusers"
+      ],
+      "verbs": [
+        "create",
+        "delete",
+        "get",
+        "list",
+        "patch"
+      ]
+    },
+    {
+      "apiGroups": "operator.dremiorestserver.com",
+      "crd": true,
+      "resources": [
+        "dremiorestservers"
+      ],
+      "verbs": [
+        "create",
+        "delete",
+        "get",
+        "list",
+        "patch"
+      ]
+    },
+    {
+      "apiGroups": "operator.postgrest.org",
+      "crd": true,
+      "resources": [
+        "postgrests"
+      ],
+      "verbs": [
+        "create",
+        "delete",
+        "get",
+        "list",
+        "patch"
+      ]
+    },
+    {
+      "apiGroups": "operator.scc-digitalhub.github.io",
+      "crd": true,
+      "resources": [
+        "apigws"
+      ],
+      "verbs": [
+        "create",
+        "delete",
+        "get",
+        "list",
+        "patch"
       ]
     }
   ]
@@ -1075,7 +1075,7 @@ object
 			</td>
 		</tr>
 		<tr>
-			<td id="rbac--clusterRole"><a href="./values.yaml#L130">rbac.clusterRole</a></td>
+			<td id="rbac--clusterRole"><a href="./values.yaml#L133">rbac.clusterRole</a></td>
 			<td>
 object
 </td>
@@ -1094,7 +1094,7 @@ object
 			</td>
 		</tr>
 		<tr>
-			<td id="rbac--clusterRole--create"><a href="./values.yaml#L132">rbac.clusterRole.create</a></td>
+			<td id="rbac--clusterRole--create"><a href="./values.yaml#L135">rbac.clusterRole.create</a></td>
 			<td>
 bool
 </td>
@@ -1108,7 +1108,7 @@ true
 			</td>
 		</tr>
 		<tr>
-			<td id="rbac--namespaced"><a href="./values.yaml#L134">rbac.namespaced</a></td>
+			<td id="rbac--namespaced"><a href="./values.yaml#L137">rbac.namespaced</a></td>
 			<td>
 bool
 </td>
@@ -1122,7 +1122,7 @@ true
 			</td>
 		</tr>
 		<tr>
-			<td id="rbac--roles"><a href="./values.yaml#L139">rbac.roles</a></td>
+			<td id="rbac--roles"><a href="./values.yaml#L142">rbac.roles</a></td>
 			<td>
 list
 </td>
@@ -1134,98 +1134,28 @@ list
 <pre lang="json">
 [
   {
-    "apiGroups": "db.movetokube.com",
-    "crd": true,
-    "resources": [
-      "postgresusers",
-      "postgres"
-    ],
-    "verbs": [
-      "get",
-      "list",
-      "create",
-      "delete",
-      "patch"
-    ]
-  },
-  {
-    "apiGroups": "operator.dremiorestserver.com",
-    "crd": true,
-    "resources": [
-      "dremiorestservers"
-    ],
-    "verbs": [
-      "get",
-      "list",
-      "create",
-      "delete",
-      "patch"
-    ]
-  },
-  {
-    "apiGroups": "operator.postgrest.org",
-    "crd": true,
-    "resources": [
-      "postgrests"
-    ],
-    "verbs": [
-      "get",
-      "list",
-      "create",
-      "delete",
-      "patch"
-    ]
-  },
-  {
-    "apiGroups": "minio.scc-digitalhub.github.io",
-    "crd": true,
-    "resources": [
-      "buckets",
-      "policies",
-      "users"
-    ],
-    "verbs": [
-      "get",
-      "list",
-      "create",
-      "delete",
-      "patch"
-    ]
-  },
-  {
-    "apiGroups": "operator.scc-digitalhub.github.io",
-    "crd": true,
-    "resources": [
-      "apigws"
-    ],
-    "verbs": [
-      "get",
-      "list",
-      "create",
-      "delete",
-      "patch"
-    ]
-  },
-  {
-    "apiGroups": "batch",
+    "apiGroups": "",
     "crd": false,
     "resources": [
-      "jobs"
+      "persistentvolumeclaims"
     ],
     "verbs": [
+      "create",
+      "delete",
       "get",
       "list",
-      "delete"
+      "patch"
     ]
   },
   {
-    "apiGroups": "apps",
+    "apiGroups": "",
     "crd": false,
     "resources": [
-      "deployments",
-      "replicasets"
+      "pods",
+      "pods/log"
     ],
     "verbs": [
+      "create",
       "get",
       "list"
     ]
@@ -1234,21 +1164,7 @@ list
     "apiGroups": "",
     "crd": false,
     "resources": [
-      "persistentvolumeclaims"
-    ],
-    "verbs": [
-      "get",
-      "list",
-      "create",
-      "delete",
-      "patch"
-    ]
-  },
-  {
-    "apiGroups": "",
-    "crd": false,
-    "resources": [
-      "services"
+      "resourcequotas"
     ],
     "verbs": [
       "get",
@@ -1268,24 +1184,94 @@ list
   },
   {
     "apiGroups": "",
+    "crd": false,
     "resources": [
-      "pods",
-      "pods/log"
-    ],
-    "verbs": [
-      "get",
-      "list",
-      "create"
-    ]
-  },
-  {
-    "apiGroups": "",
-    "resources": [
-      "resourcequotas"
+      "services"
     ],
     "verbs": [
       "get",
       "list"
+    ]
+  },
+  {
+    "apiGroups": "apps",
+    "crd": false,
+    "resources": [
+      "deployments",
+      "replicasets"
+    ],
+    "verbs": [
+      "get",
+      "list"
+    ]
+  },
+  {
+    "apiGroups": "batch",
+    "crd": false,
+    "resources": [
+      "jobs"
+    ],
+    "verbs": [
+      "delete",
+      "get",
+      "list"
+    ]
+  },
+  {
+    "apiGroups": "db.movetokube.com",
+    "crd": true,
+    "resources": [
+      "postgres",
+      "postgresusers"
+    ],
+    "verbs": [
+      "create",
+      "delete",
+      "get",
+      "list",
+      "patch"
+    ]
+  },
+  {
+    "apiGroups": "operator.dremiorestserver.com",
+    "crd": true,
+    "resources": [
+      "dremiorestservers"
+    ],
+    "verbs": [
+      "create",
+      "delete",
+      "get",
+      "list",
+      "patch"
+    ]
+  },
+  {
+    "apiGroups": "operator.postgrest.org",
+    "crd": true,
+    "resources": [
+      "postgrests"
+    ],
+    "verbs": [
+      "create",
+      "delete",
+      "get",
+      "list",
+      "patch"
+    ]
+  },
+  {
+    "apiGroups": "operator.scc-digitalhub.github.io",
+    "crd": true,
+    "resources": [
+      "apigws"
+    ],
+    "verbs": [
+      "create",
+      "delete",
+      "get",
+      "list",
+      "patch"
     ]
   }
 ]
@@ -1295,7 +1281,7 @@ list
 			</td>
 		</tr>
 		<tr>
-			<td id="replicaCount"><a href="./values.yaml#L249">replicaCount</a></td>
+			<td id="replicaCount"><a href="./values.yaml#L242">replicaCount</a></td>
 			<td>
 int
 </td>
@@ -1309,7 +1295,7 @@ int
 			</td>
 		</tr>
 		<tr>
-			<td id="resourceSelectors"><a href="./values.yaml#L252">resourceSelectors</a></td>
+			<td id="resourceSelectors"><a href="./values.yaml#L245">resourceSelectors</a></td>
 			<td>
 object
 </td>
@@ -1339,7 +1325,7 @@ object
 			</td>
 		</tr>
 		<tr>
-			<td id="resourceSelectors--deployments"><a href="./values.yaml#L254">resourceSelectors.deployments</a></td>
+			<td id="resourceSelectors--deployments"><a href="./values.yaml#L247">resourceSelectors.deployments</a></td>
 			<td>
 string
 </td>
@@ -1353,7 +1339,7 @@ string
 			</td>
 		</tr>
 		<tr>
-			<td id="resourceSelectors--jobs"><a href="./values.yaml#L256">resourceSelectors.jobs</a></td>
+			<td id="resourceSelectors--jobs"><a href="./values.yaml#L249">resourceSelectors.jobs</a></td>
 			<td>
 string
 </td>
@@ -1367,7 +1353,7 @@ string
 			</td>
 		</tr>
 		<tr>
-			<td id="resourceSelectors--pvcs"><a href="./values.yaml#L258">resourceSelectors.pvcs</a></td>
+			<td id="resourceSelectors--pvcs"><a href="./values.yaml#L251">resourceSelectors.pvcs</a></td>
 			<td>
 object
 </td>
@@ -1387,7 +1373,7 @@ object
 			</td>
 		</tr>
 		<tr>
-			<td id="resourceSelectors--pvcs--labels"><a href="./values.yaml#L260">resourceSelectors.pvcs.labels</a></td>
+			<td id="resourceSelectors--pvcs--labels"><a href="./values.yaml#L253">resourceSelectors.pvcs.labels</a></td>
 			<td>
 string
 </td>
@@ -1401,7 +1387,7 @@ string
 			</td>
 		</tr>
 		<tr>
-			<td id="resourceSelectors--pvcs--managedBy"><a href="./values.yaml#L262">resourceSelectors.pvcs.managedBy</a></td>
+			<td id="resourceSelectors--pvcs--managedBy"><a href="./values.yaml#L255">resourceSelectors.pvcs.managedBy</a></td>
 			<td>
 string
 </td>
@@ -1415,7 +1401,7 @@ string
 			</td>
 		</tr>
 		<tr>
-			<td id="resourceSelectors--secrets"><a href="./values.yaml#L264">resourceSelectors.secrets</a></td>
+			<td id="resourceSelectors--secrets"><a href="./values.yaml#L257">resourceSelectors.secrets</a></td>
 			<td>
 object
 </td>
@@ -1436,7 +1422,7 @@ object
 			</td>
 		</tr>
 		<tr>
-			<td id="resourceSelectors--secrets--labels"><a href="./values.yaml#L266">resourceSelectors.secrets.labels</a></td>
+			<td id="resourceSelectors--secrets--labels"><a href="./values.yaml#L259">resourceSelectors.secrets.labels</a></td>
 			<td>
 string
 </td>
@@ -1450,7 +1436,7 @@ string
 			</td>
 		</tr>
 		<tr>
-			<td id="resourceSelectors--secrets--names"><a href="./values.yaml#L268">resourceSelectors.secrets.names</a></td>
+			<td id="resourceSelectors--secrets--names"><a href="./values.yaml#L261">resourceSelectors.secrets.names</a></td>
 			<td>
 string
 </td>
@@ -1464,7 +1450,7 @@ string
 			</td>
 		</tr>
 		<tr>
-			<td id="resourceSelectors--secrets--owners"><a href="./values.yaml#L270">resourceSelectors.secrets.owners</a></td>
+			<td id="resourceSelectors--secrets--owners"><a href="./values.yaml#L263">resourceSelectors.secrets.owners</a></td>
 			<td>
 string
 </td>
@@ -1478,7 +1464,7 @@ string
 			</td>
 		</tr>
 		<tr>
-			<td id="resourceSelectors--services"><a href="./values.yaml#L272">resourceSelectors.services</a></td>
+			<td id="resourceSelectors--services"><a href="./values.yaml#L265">resourceSelectors.services</a></td>
 			<td>
 string
 </td>
@@ -1492,7 +1478,7 @@ string
 			</td>
 		</tr>
 		<tr>
-			<td id="resources"><a href="./values.yaml#L275">resources</a></td>
+			<td id="resources"><a href="./values.yaml#L268">resources</a></td>
 			<td>
 object
 </td>
@@ -1502,14 +1488,23 @@ object
 <details>
 <summary>+Expand</summary>
 <pre lang="json">
-{}
+{
+  "limits": {
+    "cpu": "2000m",
+    "memory": "4Gi"
+  },
+  "requests": {
+    "cpu": "1000m",
+    "memory": "1Gi"
+  }
+}
 </pre>
 </details>
 </div>
 			</td>
 		</tr>
 		<tr>
-			<td id="securityContext"><a href="./values.yaml#L278">securityContext</a></td>
+			<td id="securityContext"><a href="./values.yaml#L277">securityContext</a></td>
 			<td>
 object
 </td>
@@ -1537,7 +1532,7 @@ object
 			</td>
 		</tr>
 		<tr>
-			<td id="securityContext--allowPrivilegeEscalation"><a href="./values.yaml#L280">securityContext.allowPrivilegeEscalation</a></td>
+			<td id="securityContext--allowPrivilegeEscalation"><a href="./values.yaml#L279">securityContext.allowPrivilegeEscalation</a></td>
 			<td>
 bool
 </td>
@@ -1551,7 +1546,7 @@ false
 			</td>
 		</tr>
 		<tr>
-			<td id="securityContext--capabilities"><a href="./values.yaml#L282">securityContext.capabilities</a></td>
+			<td id="securityContext--capabilities"><a href="./values.yaml#L281">securityContext.capabilities</a></td>
 			<td>
 object
 </td>
@@ -1572,7 +1567,7 @@ object
 			</td>
 		</tr>
 		<tr>
-			<td id="securityContext--capabilities--drop"><a href="./values.yaml#L284">securityContext.capabilities.drop</a></td>
+			<td id="securityContext--capabilities--drop"><a href="./values.yaml#L283">securityContext.capabilities.drop</a></td>
 			<td>
 list
 </td>
@@ -1591,7 +1586,7 @@ list
 			</td>
 		</tr>
 		<tr>
-			<td id="securityContext--runAsNonRoot"><a href="./values.yaml#L287">securityContext.runAsNonRoot</a></td>
+			<td id="securityContext--runAsNonRoot"><a href="./values.yaml#L286">securityContext.runAsNonRoot</a></td>
 			<td>
 bool
 </td>
@@ -1605,7 +1600,7 @@ true
 			</td>
 		</tr>
 		<tr>
-			<td id="securityContext--seccompProfile"><a href="./values.yaml#L289">securityContext.seccompProfile</a></td>
+			<td id="securityContext--seccompProfile"><a href="./values.yaml#L288">securityContext.seccompProfile</a></td>
 			<td>
 object
 </td>
@@ -1624,7 +1619,7 @@ object
 			</td>
 		</tr>
 		<tr>
-			<td id="securityContext--seccompProfile--type"><a href="./values.yaml#L291">securityContext.seccompProfile.type</a></td>
+			<td id="securityContext--seccompProfile--type"><a href="./values.yaml#L290">securityContext.seccompProfile.type</a></td>
 			<td>
 string
 </td>
@@ -1638,7 +1633,7 @@ string
 			</td>
 		</tr>
 		<tr>
-			<td id="service"><a href="./values.yaml#L294">service</a></td>
+			<td id="service"><a href="./values.yaml#L293">service</a></td>
 			<td>
 object
 </td>
@@ -1659,7 +1654,7 @@ object
 			</td>
 		</tr>
 		<tr>
-			<td id="service--nodePort"><a href="./values.yaml#L296">service.nodePort</a></td>
+			<td id="service--nodePort"><a href="./values.yaml#L295">service.nodePort</a></td>
 			<td>
 string
 </td>
@@ -1673,7 +1668,7 @@ string
 			</td>
 		</tr>
 		<tr>
-			<td id="service--port"><a href="./values.yaml#L298">service.port</a></td>
+			<td id="service--port"><a href="./values.yaml#L297">service.port</a></td>
 			<td>
 int
 </td>
@@ -1687,7 +1682,7 @@ int
 			</td>
 		</tr>
 		<tr>
-			<td id="service--type"><a href="./values.yaml#L300">service.type</a></td>
+			<td id="service--type"><a href="./values.yaml#L299">service.type</a></td>
 			<td>
 string
 </td>
@@ -1701,7 +1696,7 @@ string
 			</td>
 		</tr>
 		<tr>
-			<td id="serviceAccount"><a href="./values.yaml#L303">serviceAccount</a></td>
+			<td id="serviceAccount"><a href="./values.yaml#L302">serviceAccount</a></td>
 			<td>
 object
 </td>
@@ -1722,7 +1717,7 @@ object
 			</td>
 		</tr>
 		<tr>
-			<td id="serviceAccount--annotations"><a href="./values.yaml#L305">serviceAccount.annotations</a></td>
+			<td id="serviceAccount--annotations"><a href="./values.yaml#L304">serviceAccount.annotations</a></td>
 			<td>
 object
 </td>
@@ -1739,7 +1734,7 @@ object
 			</td>
 		</tr>
 		<tr>
-			<td id="serviceAccount--create"><a href="./values.yaml#L307">serviceAccount.create</a></td>
+			<td id="serviceAccount--create"><a href="./values.yaml#L306">serviceAccount.create</a></td>
 			<td>
 bool
 </td>
@@ -1753,7 +1748,7 @@ true
 			</td>
 		</tr>
 		<tr>
-			<td id="serviceAccount--name"><a href="./values.yaml#L309">serviceAccount.name</a></td>
+			<td id="serviceAccount--name"><a href="./values.yaml#L308">serviceAccount.name</a></td>
 			<td>
 string
 </td>
@@ -1767,7 +1762,7 @@ string
 			</td>
 		</tr>
 		<tr>
-			<td id="storageClasses"><a href="./values.yaml#L312">storageClasses</a></td>
+			<td id="storageClasses"><a href="./values.yaml#L311">storageClasses</a></td>
 			<td>
 string
 </td>
@@ -1781,7 +1776,7 @@ string
 			</td>
 		</tr>
 		<tr>
-			<td id="tolerations"><a href="./values.yaml#L315">tolerations</a></td>
+			<td id="tolerations"><a href="./values.yaml#L314">tolerations</a></td>
 			<td>
 list
 </td>
